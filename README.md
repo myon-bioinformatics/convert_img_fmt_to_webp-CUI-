@@ -10,4 +10,4 @@ convert image files(format: png,ipg,jpeg,gif,svg) to webp file
 [info]Unless you understand "Docker" or not want to install "PySimpleGUI", I recommend using GUI version
 
 ## Rederence
-About GUI version: [GUI version](https://github.com/myon-bioinformatics/convert_img_fmt_to_webp-GUI-)
+About GUI version: [convert_img_fmt_to_webp-GUI-](https://github.com/myon-bioinformatics/convert_img_fmt_to_webp-GUI-)
