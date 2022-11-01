@@ -1,6 +1,6 @@
 # convert_img_fmt_to_webp-CUI-
 ## Summary
-![python_logo](https://s3.dualstack.us-east-2.amazonaws.com/pythondotorg-assets/media/community/logos/python-logo-only.png)
+![WebP_IMAGE](https://developers.google.com/static/speed/webp/images/webplogo.png)
 
 convert image files(format: png,ipg,jpeg,gif,svg) to webp file
 
