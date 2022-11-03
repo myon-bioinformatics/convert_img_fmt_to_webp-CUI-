@@ -2,7 +2,7 @@
 ## Summary
 ![WebP_IMAGE](https://developers.google.com/static/speed/webp/images/webplogo.png)
 
-convert image files(format: png,ipg,jpeg,gif,svg) to webp file
+__convert image files(format: png,ipg,jpeg,gif,svg) to webp file__
 
 ## Note/Warning
 > __Note__ You must install "PySimpleGUI" and pillow by pip, if not.
