@@ -4,10 +4,10 @@
 
 convert image files(format: png,ipg,jpeg,gif,svg) to webp file
 
-## Note
-[Info]you must install "Pillow" library via pip, if not.
+## Note/Warning
+> __Note__ You must install "PySimpleGUI" and pillow by pip, if not.
 
-[info]Unless you understand "Docker" or not want to install "PySimpleGUI", I recommend using GUI version
+> __Warning__ Unless you understand "Docker" or not want to install "PySimpleGUI", I recommend using GUI version
 
 ## References
 - About Pillow: https://pypi.org/project/Pillow
