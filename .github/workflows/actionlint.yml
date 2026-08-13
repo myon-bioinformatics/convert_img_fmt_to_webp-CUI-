@@ -1,0 +1,22 @@
+name: Validate GitHub Actions
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+  push:
+    paths:
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check added workflow syntax
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color .github/workflows/claude.yml .github/workflows/actionlint.yml
