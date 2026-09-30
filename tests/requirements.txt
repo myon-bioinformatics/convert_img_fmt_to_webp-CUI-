@@ -1,2 +1,2 @@
 # Test-only; runtime Pillow stays in ../requirements.txt.
-pytest>=8,<10
+pytest>=8
