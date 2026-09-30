@@ -41,3 +41,11 @@ with only runtime dependencies installed.
 
 The inactive CodeQL workflow has been removed by project policy. xprobe collects
 test failure evidence; it does not replace static vulnerability analysis.
+
+CI also loads a pinned, test-only xprobe pytest adapter and preserves one native
+JSONL observation artifact per Python version. These records retain pytest
+phase/outcome distinctions such as setup/call/teardown, xfail and xpass while
+omitting captured output, traceback, marker reasons and parameter values.
+Commit SHA remains unmeasured/null until canonical repository metadata is wired;
+the workflow does not substitute `GITHUB_SHA`. Native JSONL complements the
+existing JUnit compatibility collector and is not published to Pages.
