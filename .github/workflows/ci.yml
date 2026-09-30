@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   test:
-    name: unittest (Python ${{ matrix.python-version }})
+    name: pytest (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -28,15 +28,37 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: requirements.txt
-      - name: Install pinned dependencies
-        run: python -m pip install -r requirements.txt
+          cache-dependency-path: |
+            requirements.txt
+            tests/requirements.txt
+      - name: Install runtime and test dependencies
+        run: python -m pip install -r requirements.txt -r tests/requirements.txt
       - name: Show resolved versions
         run: python -c "import sys, PIL; print(sys.version); print('Pillow', PIL.__version__)"
       - name: Check WebP support
         run: python -c "from PIL import features; assert features.check('webp'), 'Pillow built without WebP'"
-      - name: Run smoke tests
-        run: python -m unittest discover -s tests -v
+      - name: Run conversion tests with JUnit
+        run: python -m pytest -q tests --junitxml=reports/pytest-${{ matrix.python-version }}.xml
+      - name: Preserve raw JUnit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-py${{ matrix.python-version }}
+          path: reports/pytest-${{ matrix.python-version }}.xml
+          if-no-files-found: error
+          retention-days: 14
+
+  failure-identity:
+    needs: test
+    if: always()
+    permissions:
+      contents: read
+      actions: read
+    uses: myon-bioinformatics/myon-bioinformatics/.github/workflows/reusable-junit-identity.yml@4dfda95d6573250477f991a0421fa6acb9bc0258
+    with:
+      expected-reports: '["junit-py3.10/pytest-3.10.xml","junit-py3.12/pytest-3.12.xml","junit-py3.14/pytest-3.14.xml"]'
+      artifact-pattern: "junit-py*"
+      output-artifact: failure-identity
 
   docker:
     name: docker build smoke
@@ -46,6 +68,8 @@ jobs:
       - uses: actions/checkout@v7
       - name: Build current image
         run: docker build -t convert-webp-cui:ci .
+      - name: Verify test tooling is absent from runtime image
+        run: docker run --rm convert-webp-cui:ci python -c "import importlib.util; assert importlib.util.find_spec('pytest') is None"
       - name: Run current image
         run: docker run --rm convert-webp-cui:ci
       - name: Test conversion inside current image
