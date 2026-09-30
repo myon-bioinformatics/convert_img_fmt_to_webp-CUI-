@@ -1,4 +1,4 @@
-FROM python:3.10.7-buster
+FROM python:3.12-slim-bookworm
 
 ARG src=/src
 
