@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.14"]
+        python-version: ["3.10", "3.12", "3.14"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -48,3 +48,5 @@ jobs:
         run: docker build -t convert-webp-cui:ci .
       - name: Run current image
         run: docker run --rm convert-webp-cui:ci
+      - name: Test conversion inside current image
+        run: docker run --rm convert-webp-cui:ci python -m unittest discover -s tests -v
