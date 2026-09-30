@@ -37,14 +37,27 @@ jobs:
         run: python -c "import sys, PIL; print(sys.version); print('Pillow', PIL.__version__)"
       - name: Check WebP support
         run: python -c "from PIL import features; assert features.check('webp'), 'Pillow built without WebP'"
-      - name: Run conversion tests with JUnit
-        run: python -m pytest -q tests --junitxml=reports/pytest-${{ matrix.python-version }}.xml
+      - name: Run conversion tests with JUnit and native observations
+        run: >-
+          python -m pytest -p scripts.xprobe_pytest -q tests
+          --junitxml=reports/pytest-${{ matrix.python-version }}.xml
+          --xprobe-jsonl=reports/pytest-events-${{ matrix.python-version }}.jsonl
+          --xprobe-repository=myon-bioinformatics/convert_img_fmt_to_webp-CUI-
+          --xprobe-run-id=py${{ matrix.python-version }}
       - name: Preserve raw JUnit
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: junit-py${{ matrix.python-version }}
           path: reports/pytest-${{ matrix.python-version }}.xml
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve native pytest observations
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pytest-native-py${{ matrix.python-version }}
+          path: reports/pytest-events-${{ matrix.python-version }}.jsonl
           if-no-files-found: error
           retention-days: 14
 
