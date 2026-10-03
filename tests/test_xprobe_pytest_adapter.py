@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -8,9 +9,6 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "scripts" / "xprobe_pytest.py"
-PROVENANCE = ROOT / "scripts" / "xprobe_pytest.provenance.json"
-SOURCE_COMMIT = "326acd667e13b21bf53ccc1590af960edf8cbf6c"
-SOURCE_BLOB = "70fac53151e97f5f28d23f9961d3837b7a885ea8"
 
 
 def _git_blob_sha(data):
@@ -50,16 +48,21 @@ def _run_native(tmp_path, source, filename="test_native_sample.py"):
     return result, rows
 
 
-def test_vendored_adapter_matches_pinned_upstream_provenance():
-    provenance = json.loads(PROVENANCE.read_text(encoding="utf-8"))
-    assert provenance == {
-        "repository": "myon-bioinformatics/xprobe",
-        "source_commit": SOURCE_COMMIT,
-        "source_path": "scripts/xprobe_pytest.py",
-        "git_blob_sha": SOURCE_BLOB,
-        "vendored_path": "scripts/xprobe_pytest.py",
+def test_vendored_adapter_and_license_match_lock():
+    lock = json.loads((ROOT / "vendor.lock.json").read_text(encoding="utf-8"))
+    assert lock["schema"] == "vendor-lock/1"
+    assert len(lock["files"]) == 2
+    assert {(e["source"], e["destination"]) for e in lock["files"]} == {
+        ("scripts/xprobe_pytest.py", "scripts/xprobe_pytest.py"),
+        ("LICENSE", "scripts/xprobe-LICENSE"),
     }
-    assert _git_blob_sha(ADAPTER.read_bytes()) == SOURCE_BLOB
+    for entry in lock["files"]:
+        assert entry["repository"] == "myon-bioinformatics/xprobe"
+        assert entry["ref"] == "refs/heads/main"
+        assert re.fullmatch(r"[0-9a-f]{40}", entry["commit"])
+        data = (ROOT / entry["destination"]).read_bytes()
+        assert _git_blob_sha(data) == entry["blob_sha"]
+        assert hashlib.sha256(data).hexdigest() == entry["sha256"]
 
 
 def test_native_adapter_preserves_outcomes_without_sensitive_values(tmp_path):
@@ -125,3 +128,4 @@ def test_abort():
     assert rows
     assert rows[0]["value"]["event"] == "start"
     assert not any(row["value"].get("event") == "finish" for row in rows)
+

@@ -1,7 +1,0 @@
-{
-  "repository": "myon-bioinformatics/xprobe",
-  "source_commit": "326acd667e13b21bf53ccc1590af960edf8cbf6c",
-  "source_path": "scripts/xprobe_pytest.py",
-  "git_blob_sha": "70fac53151e97f5f28d23f9961d3837b7a885ea8",
-  "vendored_path": "scripts/xprobe_pytest.py"
-}
