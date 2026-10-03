@@ -169,4 +169,3 @@ jobs:
         run: docker run --rm convert-webp-cui:ci
       - name: Test conversion inside current image
         run: docker run --rm convert-webp-cui:ci python -m unittest discover -s tests -v
-
