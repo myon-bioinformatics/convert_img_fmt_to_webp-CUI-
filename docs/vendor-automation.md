@@ -27,7 +27,7 @@ disposable working copy, without a separate manual activation step:
 
 ```bash
 git clone https://github.com/myon-bioinformatics/myon-bioinformatics.git .vendor-sync-tools
-git -C .vendor-sync-tools checkout --detach 90bc069c33901bd4b5373eb02311026e0acf2e2e
+git -C .vendor-sync-tools checkout --detach 37f30d5acdc1906d4acbd103ce6f652bc13ca7eb
 python -S .vendor-sync-tools/vendor_sync.py check --manifest vendor.lock.json
 # To restore missing locked files:
 python -S .vendor-sync-tools/vendor_sync.py materialize --manifest vendor.lock.json
