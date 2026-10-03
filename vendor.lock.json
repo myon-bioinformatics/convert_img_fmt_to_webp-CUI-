@@ -1,0 +1,23 @@
+{
+  "schema": "vendor-lock/1",
+  "files": [
+    {
+      "repository": "myon-bioinformatics/xprobe",
+      "ref": "refs/heads/main",
+      "commit": "326acd667e13b21bf53ccc1590af960edf8cbf6c",
+      "source": "scripts/xprobe_pytest.py",
+      "destination": "scripts/xprobe_pytest.py",
+      "blob_sha": "70fac53151e97f5f28d23f9961d3837b7a885ea8",
+      "sha256": "c0ea71f9d971bf47a9f5f1794ef8a7f641dd17694ea8e7f29795d326c5229285"
+    },
+    {
+      "repository": "myon-bioinformatics/xprobe",
+      "ref": "refs/heads/main",
+      "commit": "326acd667e13b21bf53ccc1590af960edf8cbf6c",
+      "source": "LICENSE",
+      "destination": "scripts/xprobe-LICENSE",
+      "blob_sha": "4ec4989b801bf1a3df6184d21f79e6e7ed5931f6",
+      "sha256": "15f66204c4a6a1ce0c94f0ed4319ff9400f872e85fd32c95f21695c2f231af59"
+    }
+  ]
+}

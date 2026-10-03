@@ -49,3 +49,7 @@ omitting captured output, traceback, marker reasons and parameter values.
 Commit SHA remains unmeasured/null until canonical repository metadata is wired;
 the workflow does not substitute `GITHUB_SHA`. Native JSONL complements the
 existing JUnit compatibility collector and is not published to Pages.
+
+
+Test-only adapter placement and automatic CI updates are described in
+[Public vendor placement in CI](docs/vendor-automation.md).

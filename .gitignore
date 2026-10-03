@@ -1,0 +1,4 @@
+.vendor-sync-tools/
+__pycache__/
+.pytest_cache/
+reports/
