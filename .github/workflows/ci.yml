@@ -63,7 +63,7 @@ jobs:
           name: vendor-snapshot
           path: |
             vendor.lock.json
-            vendor-promotion.json
+            ${{ inputs.vendor-mode != 'locked' && 'vendor-promotion.json' || '' }}
             scripts/xprobe_pytest.py
             scripts/xprobe-LICENSE
             scripts/gh_identity.py
@@ -107,7 +107,7 @@ jobs:
           path: .
       - name: Verify resolved vendor snapshot
         run: python -S .vendor-sync-tools/vendor_sync.py check --manifest vendor.lock.json
-      - name: Verify enrolled GHI is inert and stdlib-loadable
+      - name: Verify enrolled GHI is stdlib-loadable
         run: python -S -c "import importlib.util; s=importlib.util.spec_from_file_location('sandbox_ghi','scripts/gh_identity.py'); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); assert hasattr(m,'capabilities')"
       - name: Show resolved versions
         run: python -c "import sys, PIL; print(sys.version); print('Pillow', PIL.__version__)"
@@ -144,8 +144,11 @@ jobs:
           name: vendor-lock-py${{ matrix.python-version }}
           path: |
             vendor.lock.json
+            ${{ inputs.vendor-mode != 'locked' && 'vendor-promotion.json' || '' }}
             scripts/xprobe_pytest.py
             scripts/xprobe-LICENSE
+            scripts/gh_identity.py
+            scripts/gh_identity-LICENSE
           if-no-files-found: error
           retention-days: 14
 
