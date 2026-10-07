@@ -1,2 +1,4 @@
 scripts/xprobe_pytest.py -text
 scripts/xprobe-LICENSE -text
+scripts/gh_identity.py -text
+scripts/gh_identity-LICENSE -text

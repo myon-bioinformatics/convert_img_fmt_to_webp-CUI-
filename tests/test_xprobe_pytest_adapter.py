@@ -51,12 +51,14 @@ def _run_native(tmp_path, source, filename="test_native_sample.py"):
 def test_vendored_adapter_and_license_match_lock():
     lock = json.loads((ROOT / "vendor.lock.json").read_text(encoding="utf-8"))
     assert lock["schema"] == "vendor-lock/1"
-    assert len(lock["files"]) == 2
-    assert {(e["source"], e["destination"]) for e in lock["files"]} == {
+    entries = [entry for entry in lock["files"]
+               if entry["destination"] in {"scripts/xprobe_pytest.py", "scripts/xprobe-LICENSE"}]
+    assert len(entries) == 2
+    assert {(e["source"], e["destination"]) for e in entries} == {
         ("scripts/xprobe_pytest.py", "scripts/xprobe_pytest.py"),
         ("LICENSE", "scripts/xprobe-LICENSE"),
     }
-    for entry in lock["files"]:
+    for entry in entries:
         assert entry["repository"] == "myon-bioinformatics/xprobe"
         assert entry["ref"] == "refs/heads/main"
         assert re.fullmatch(r"[0-9a-f]{40}", entry["commit"])
@@ -128,4 +130,3 @@ def test_abort():
     assert rows
     assert rows[0]["value"]["event"] == "start"
     assert not any(row["value"].get("event") == "finish" for row in rows)
-

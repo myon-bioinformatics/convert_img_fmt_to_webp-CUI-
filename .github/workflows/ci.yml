@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: myon-bioinformatics/myon-bioinformatics
-          ref: 37f30d5acdc1906d4acbd103ce6f652bc13ca7eb
+          ref: 08dc3757deeb930c950bdcc6bd55ec3112ba49fc
           path: .vendor-sync-tools
           persist-credentials: false
       - name: Verify checked-in vendor copies
@@ -44,7 +44,7 @@ jobs:
         run: |
           python -S - <<'PY'
           from pathlib import Path
-          for name in ('xprobe_pytest.py', 'xprobe-LICENSE'):
+          for name in ('xprobe_pytest.py', 'xprobe-LICENSE', 'gh_identity.py', 'gh_identity-LICENSE'):
               Path('scripts', name).unlink()
           PY
           python -S .vendor-sync-tools/vendor_sync.py materialize
@@ -53,7 +53,8 @@ jobs:
         shell: bash
         if: inputs.vendor-mode != 'locked'
         run: |
-          python -S .vendor-sync-tools/vendor_sync.py update --manifest vendor.lock.json
+          python -S .vendor-sync-tools/vendor_sync.py promote --manifest vendor.lock.json | tee vendor-promotion.json
+          python -S -m json.tool vendor-promotion.json > /dev/null
           python -S .vendor-sync-tools/vendor_sync.py check --manifest vendor.lock.json
       - name: Preserve resolved vendor snapshot
         if: always()
@@ -62,8 +63,11 @@ jobs:
           name: vendor-snapshot
           path: |
             vendor.lock.json
+            ${{ inputs.vendor-mode != 'locked' && 'vendor-promotion.json' || '' }}
             scripts/xprobe_pytest.py
             scripts/xprobe-LICENSE
+            scripts/gh_identity.py
+            scripts/gh_identity-LICENSE
           if-no-files-found: error
           retention-days: 14
 
@@ -93,7 +97,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: myon-bioinformatics/myon-bioinformatics
-          ref: 37f30d5acdc1906d4acbd103ce6f652bc13ca7eb
+          ref: 08dc3757deeb930c950bdcc6bd55ec3112ba49fc
           path: .vendor-sync-tools
           persist-credentials: false
       - name: Download resolved vendor snapshot
@@ -103,6 +107,8 @@ jobs:
           path: .
       - name: Verify resolved vendor snapshot
         run: python -S .vendor-sync-tools/vendor_sync.py check --manifest vendor.lock.json
+      - name: Verify enrolled GHI is stdlib-loadable
+        run: python -S -c "import importlib.util; s=importlib.util.spec_from_file_location('sandbox_ghi','scripts/gh_identity.py'); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); assert hasattr(m,'capabilities')"
       - name: Show resolved versions
         run: python -c "import sys, PIL; print(sys.version); print('Pillow', PIL.__version__)"
       - name: Check WebP support
@@ -138,8 +144,11 @@ jobs:
           name: vendor-lock-py${{ matrix.python-version }}
           path: |
             vendor.lock.json
+            ${{ inputs.vendor-mode != 'locked' && 'vendor-promotion.json' || '' }}
             scripts/xprobe_pytest.py
             scripts/xprobe-LICENSE
+            scripts/gh_identity.py
+            scripts/gh_identity-LICENSE
           if-no-files-found: error
           retention-days: 14
 
