@@ -18,6 +18,24 @@
       "destination": "scripts/xprobe-LICENSE",
       "blob_sha": "4ec4989b801bf1a3df6184d21f79e6e7ed5931f6",
       "sha256": "15f66204c4a6a1ce0c94f0ed4319ff9400f872e85fd32c95f21695c2f231af59"
+    },
+    {
+      "repository": "myon-bioinformatics/gh_identity",
+      "ref": "refs/heads/main",
+      "commit": "fc2c527257b12eb99c00637bbae74f8988fd6bf4",
+      "source": "gh_identity.py",
+      "destination": "scripts/gh_identity.py",
+      "blob_sha": "57f96181fecaef0a6f19bf5052b93d9bdcab69c5",
+      "sha256": "864c63af6f68d4d2baeb076bbcad0905f1973d3b0092f8f8b3f776f3ecd5ad95"
+    },
+    {
+      "repository": "myon-bioinformatics/gh_identity",
+      "ref": "refs/heads/main",
+      "commit": "fc2c527257b12eb99c00637bbae74f8988fd6bf4",
+      "source": "LICENSE",
+      "destination": "scripts/gh_identity-LICENSE",
+      "blob_sha": "4ec4989b801bf1a3df6184d21f79e6e7ed5931f6",
+      "sha256": "15f66204c4a6a1ce0c94f0ed4319ff9400f872e85fd32c95f21695c2f231af59"
     }
   ]
 }
