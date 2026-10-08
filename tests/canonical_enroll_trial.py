@@ -13,8 +13,10 @@ SCRATCH = ROOT / "scratch-vendor-enroll"
 CANONICAL = ROOT / ".canonical"
 COMMIT = "d849c17f5e7c18037e2ab2c04bc71eee3e22cd35"
 SOURCES = {
-    "cli_args.py": ("vendor/cli_args.py", "cb7dbc095ea4079321494dd3a79df695a2d8bffd"),
-    "LICENSE": ("vendor/cli_args-LICENSE", "4ec4989b801bf1a3df6184d21f79e6e7ed5931f6"),
+    "cli_args.py": ("vendor/cli_args.py", "cb7dbc095ea4079321494dd3a79df695a2d8bffd",
+                    "591cf44634d684e2d8e3abe3f8b19d32f49ec75f569189d839bb29d84bc5a220"),
+    "LICENSE": ("vendor/cli_args-LICENSE", "4ec4989b801bf1a3df6184d21f79e6e7ed5931f6",
+                "15f66204c4a6a1ce0c94f0ed4319ff9400f872e85fd32c95f21695c2f231af59"),
 }
 
 def run(*args, expected=0):
@@ -27,16 +29,17 @@ def run(*args, expected=0):
 def main():
     SCRATCH.mkdir(exist_ok=False)
     entries = []
-    for source, (dest, expected_blob) in SOURCES.items():
+    for source, (dest, expected_blob, expected_sha256) in SOURCES.items():
         url = f"https://raw.githubusercontent.com/myon-bioinformatics/cli_args/{COMMIT}/{source}"
         with urllib.request.urlopen(url, timeout=30) as response:
             payload = response.read()
         blob = hashlib.sha1(f"blob {len(payload)}\0".encode() + payload).hexdigest()
         assert blob == expected_blob, (source, blob)
+        assert hashlib.sha256(payload).hexdigest() == expected_sha256, source
         entries.append({"repository": "myon-bioinformatics/cli_args",
                         "ref": "refs/heads/main", "commit": COMMIT, "source": source,
                         "destination": dest, "blob_sha": blob,
-                        "sha256": hashlib.sha256(payload).hexdigest()})
+                        "sha256": expected_sha256})
     lock = SCRATCH / "vendor.lock.json"
     lock.write_text(json.dumps({"schema": "vendor-lock/1", "files": entries}, indent=2) + "\n")
     sync = CANONICAL / "vendor_sync.py"
@@ -45,7 +48,7 @@ def main():
     # Missing destinations must fail offline check before enrollment.
     run(sync, "check", *cmd, expected=2)
     first = run(sync, "enroll", *cmd)
-    assert set(first["changed_paths"]) == set(dest for dest, _ in SOURCES.values())
+    assert set(first["changed_paths"]) == set(row[0] for row in SOURCES.values())
     run(sync, "check", *cmd)
     second = run(sync, "enroll", *cmd)
     assert second["changed_paths"] == [], second
