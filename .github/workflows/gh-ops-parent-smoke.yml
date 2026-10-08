@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: myon-bioinformatics/myon-bioinformatics
-          ref: adf6e4ee2c0b049ddd4215b499332ecaa803a692
+          ref: f9e8b77e407bfd80c79b55123b13da9fad4a05d9
           path: .canonical-gh-ops
           persist-credentials: false
       - name: Exercise offline consumer contract

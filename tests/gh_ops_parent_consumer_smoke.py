@@ -13,8 +13,8 @@ import subprocess
 import sys
 import tempfile
 
-PARENT_SHA = "adf6e4ee2c0b049ddd4215b499332ecaa803a692"
-GH_OPS_BLOB = "bac73898988ec3d2f50374b3df05b764a7749afd"
+PARENT_SHA = "f9e8b77e407bfd80c79b55123b13da9fad4a05d9"
+GH_OPS_BLOB = "6e5470e1e9395f9f3dd0908d3ce5190e0294e807"
 GHI_BLOB = "57f96181fecaef0a6f19bf5052b93d9bdcab69c5"
 
 def git(cwd, *args):
