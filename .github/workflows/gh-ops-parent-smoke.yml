@@ -1,0 +1,31 @@
+name: Experimental canonical gh_ops consumer smoke
+on:
+  push:
+    branches: [experiment/gh-ops-parent-consumer-smoke]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gh-ops-consumer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout sandbox consumer
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Checkout pinned parent gh_ops candidate
+        uses: actions/checkout@v4
+        with:
+          repository: myon-bioinformatics/myon-bioinformatics
+          ref: adf6e4ee2c0b049ddd4215b499332ecaa803a692
+          path: .canonical-gh-ops
+          persist-credentials: false
+      - name: Exercise offline consumer contract
+        run: python -S tests/gh_ops_parent_consumer_smoke.py --repo myon-bioinformatics/convert_img_fmt_to_webp-CUI-
