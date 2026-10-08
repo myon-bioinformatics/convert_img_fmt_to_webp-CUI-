@@ -1,0 +1,45 @@
+name: Disposable canonical enroll trial
+on:
+  push:
+    branches: [experiment/canonical-enroll-cli-args]
+  pull_request:
+    paths:
+      - ".github/workflows/canonical-enroll-trial.yml"
+      - "tests/canonical_enroll_trial.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enroll-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout disposable trial
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Checkout pinned canonical vendor tooling
+        uses: actions/checkout@v4
+        with:
+          repository: myon-bioinformatics/myon-bioinformatics
+          ref: 38954220a14c2054b8d020005b8d454cde8cffb1
+          path: .canonical
+          persist-credentials: false
+      - name: Exercise canonical enroll, check, no-op, mismatch and staging
+        run: python -S tests/canonical_enroll_trial.py
+      - name: Preserve trial evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-enroll-trial
+          path: |
+            scratch-vendor-enroll/vendor.lock.json
+            scratch-vendor-enroll/evidence/
+          if-no-files-found: warn
+          retention-days: 3
