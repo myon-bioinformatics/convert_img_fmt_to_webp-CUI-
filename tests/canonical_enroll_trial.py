@@ -64,9 +64,13 @@ def main():
     run(sync, "enroll", *cmd, expected=2)
     assert source_file.read_bytes() == b"do not overwrite me\n"
     # A separate import check uses the verified artifact, not the deliberately corrupted copy.
+    sys.dont_write_bytecode = True
     sys.path.insert(0, str(SCRATCH / "evidence/vendor"))
     module = importlib.import_module("cli_args")
     assert module.__file__.endswith("cli_args.py")
+    expected = {"vendor-evidence.json", "vendor.lock.json", "vendor/cli_args.py", "vendor/cli_args-LICENSE"}
+    actual = {p.relative_to(SCRATCH / "evidence").as_posix() for p in (SCRATCH / "evidence").rglob("*") if p.is_file()}
+    assert actual == expected, (actual, expected)
     print(json.dumps({"result": "success", "commit": COMMIT,
                       "first": first["changed_paths"], "second": second["changed_paths"],
                       "files": [{"path": e["destination"], "sha256": e["sha256"], "blob": e["blob_sha"]}
