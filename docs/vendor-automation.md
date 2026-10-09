@@ -21,7 +21,8 @@ tool uses anonymous public HTTP, with anonymous temporary Git fallback for
 
 The resolved lock, both modules and both LICENSE files are preserved in Actions
 artifacts before and after testing, including failures. Update runs also preserve
-the promotion receipt, for six files in each successful snapshot. JUnit/native
+an available promotion receipt. Membership comes from the lock and each snapshot
+includes `vendor-evidence.json`. JUnit/native
 collection remains unchanged and cannot turn a failed producer green. Public repository Actions
 artifacts are downloadable by signed-in users; raw reports are not published to
 Pages. There is no commit, push, update PR creation or main writeback. The
@@ -31,7 +32,7 @@ PyYAML is confined to `tests/requirements.txt` for workflow regression checks.
 Workflow dispatch offers `vendor-mode: locked` to test the pinned baseline.
 It materializes and verifies all four locked source/LICENSE files but does not
 promote, generate a promotion receipt, or include a receipt path in its artifact
-uploads; each successful locked snapshot contains five files. A successful
+uploads; the locked snapshot contains lock-derived members and staging metadata. A successful
 update with no upstream byte changes still produces a real promotion receipt
 with empty `changed_paths` and `promoted` lists. Normal push/PR runs update
 automatically. ALM agents can use the same CLI in a disposable working copy,
@@ -40,7 +41,7 @@ without a separate manual activation step:
 ```bash
 set -euo pipefail
 git clone https://github.com/myon-bioinformatics/myon-bioinformatics.git .vendor-sync-tools
-git -C .vendor-sync-tools checkout --detach 08dc3757deeb930c950bdcc6bd55ec3112ba49fc
+git -C .vendor-sync-tools checkout --detach 380d877cd85837f36cf6030d626ee8bb7dfa28cb
 python -S .vendor-sync-tools/vendor_sync.py check --manifest vendor.lock.json
 # To restore missing locked files:
 python -S .vendor-sync-tools/vendor_sync.py materialize --manifest vendor.lock.json
@@ -57,3 +58,23 @@ finish local edits separately rather than overwrite them. An artifact's exact
 lock can be materialized later to reproduce its selected sources. Cross-repo
 rollout is tracked in myon-bioinformatics/myon-bioinformatics#35; JUnit remains
 tracked in #22.
+
+
+## Lock-derived evidence staging
+
+Vendor artifact membership is now derived exclusively by the parent
+`vendor_stage.py`, checked out with `vendor_sync.py` at full commit
+`380d877cd85837f36cf6030d626ee8bb7dfa28cb`. Workflow uploads point to its generated
+directory; adding a locked source or LICENSE needs no upload path-list edit.
+Artifact names and repository-relative paths inside each artifact are preserved.
+`vendor-evidence.json` is additional metadata with byte hashes and separate
+locked/candidate, runtime receipt, and legacy projection classifications.
+
+Staging runs even after a failed test, verifies every locked byte, and fails
+nonzero on missing or modified members. It does not certify tests or promotion.
+Locked runs exclude promotion receipts; candidate runs include one when present.
+Legacy projection formats, when present, remain consumer-owned outputs of the
+lock. Exact source pins, LICENSEs, test-only dependencies and Pages/MCP/runtime
+behavior are unchanged. Central topology intent is owned by the parent's
+`vendor-consumers.json`; recommended baselines belong to `vendor-catalog.json`;
+this consumer's lock remains the authority for adopted bytes.
